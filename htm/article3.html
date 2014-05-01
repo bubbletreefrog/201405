@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="../css/pmag.css" type="text/css" />
+</head>
+<body>
+<div id="header_wrap">
+   <h1><a href="https://www.facebook.com/groups/programmerMagazine">程式人雜誌</a> <sub> --  <a href="https://dl.dropbox.com/u/101584453/pmag/201403/htm/home.html">2014 年 5 月號</a> (開放公益出版品)</sub></h1>
+</div>
+<div id="content">
+<div id="TOC">
+<ul>
+<li><a href="#亂數產生器-作者bridan">亂數產生器 (作者：Bridan)</a></li>
+</ul>
+</div>
+<h2 id="亂數產生器-作者bridan"><a href="#亂數產生器-作者bridan">亂數產生器 (作者：Bridan)</a></h2>
+<p>想過電腦中亂數產生器如何設計的嗎？</p>
+<p>大多數亂數產生器採用 <a href="http://zh.wikipedia.org/w/index.php?title=%E7%B7%9A%E6%80%A7%E5%90%8C%E9%A4%98%E6%96%B9%E6%B3%95&amp;variant=zh-tw">線性同餘法</a> 設計 ( <a href="http://en.wikipedia.org/wiki/Linear_congruential_generator">Linear Congruential Generator, LCG</a> )，因為方法簡單以及亂數 <a href="http://zh.wikipedia.org/w/index.php?title=%E5%9D%87%E5%8B%BB%E5%88%86%E4%BD%88&amp;variant=zh-tw">均勻分佈</a> ( <a href="http://en.wikipedia.org/wiki/Uniform_distribution">Uniform distribution</a> )。</p>
+<p>其原理為：</p>
+<pre><code>Xn = a Xn-1 + b     將一正整數乘以 a 常數再加上 b 常數，
+0&lt;= Xn＜M           除 M 取餘數，這個 Xn 可重複代入上式計算下一個亂數。</code></pre>
+<p>各位可以參考 <a href="https://docs.google.com/spreadsheet/ccc?key=0AvTFWEwZaQ8_dGpvOW96a3kySlh1cWwxeG04QkV2N0E&amp;hl=zh_TW#gid=0">EXCEL 檔</a> ，我選用 a = 49，b = 0，M = 215 = 32768，C 欄位就是亂數，介於零與一之間，從 E、F 欄位可以看出數值分部非常均勻。 另外，從 A 欄位會發現，每 2048 筆資料會重複循環，這裡所舉的例子是方便讀者明瞭原理，商用軟體至少用32 bits，並挑選合適的 a b 值，所以很難發現重複性。</p>
+<p>通常均勻分佈的亂數產生器就夠用，不過與統計有關的程式還需要 <a href="http://zh.wikipedia.org/w/index.php?title=%E5%B8%B8%E6%85%8B%E5%88%86%E4%BD%88&amp;variant=zh-tw">常態分佈</a> ( <a href="http://en.wikipedia.org/wiki/Normal_distribution">Normal distribution</a> ) 的亂數產生器，那如何設計呢？還記得 <a href="http://zh.wikipedia.org/w/index.php?title=%E4%B8%AD%E5%BF%83%E6%9E%81%E9%99%90%E5%AE%9A%E7%90%86&amp;variant=zh-tw">中央極限定理</a> ( <a href="http://en.wikipedia.org/wiki/Central_limit_theorem">Central limit theorem</a> ) 吧！從未知分佈的母群體中抽樣，只要能計算出這群體平均數 μ 以及有限的變異數 σ2，那麼抽出 n 個隨機樣本取平均值，當 n 趨近無窮大，它的平均值抽樣分配將近似於常態分佈。再以 EXCEL 檔內容為例，一般程式計算時間有限不可能無窮計算下去，因此 <strong>只取連續六筆資料平均再正規化</strong> ，原均勻分佈的 C 欄位值，經過計算後就成為 H 欄位常態分佈的亂數，請參考 J 欄位的機率分佈。</p>
+<div class="figure">
+<img src="../img/Normal.gif" />
+</div>
+<p>另外，常態分佈亂數方法二，請參考 <a href="http://4rdp.blogspot.com/2008/06/random-variable-of-normal-distribution.html">http://4rdp.blogspot.com/2008/06/random-variable-of-normal-distribution.html</a> 。</p>
+<p>(本文來自「研發養成所」 Bridan 的網誌，原文網址為 <a href="http://4rdp.blogspot.tw/2008/06/blog-post_14.html">http://4rdp.blogspot.tw/2008/06/blog-post_14.html</a> ，由陳鍾誠編輯後納入程式人雜誌)</p>
+</div>
+<div id="footer">
+<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a> ，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/ ">創作共用：姓名標示、相同方式分享</a> 授權，歡迎加入 <a href="https://www.facebook.com/groups/programmerMagazine/">雜誌社團</a>
+</div>
+</body>
+</html>

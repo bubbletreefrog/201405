@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="../css/pmag.css" type="text/css" />
+</head>
+<body>
+<div id="header_wrap">
+   <h1><a href="https://www.facebook.com/groups/programmerMagazine">程式人雜誌</a> <sub> --  <a href="https://dl.dropbox.com/u/101584453/pmag/201403/htm/home.html">2014 年 5 月號</a> (開放公益出版品)</sub></h1>
+</div>
+<div id="content">
+<div id="TOC">
+<ul>
+<li><a href="#z-b-還是-z-b-作者wush-wu">Z &gt; b 還是 Z &lt; b (作者：Wush Wu)</a></li>
+</ul>
+</div>
+<h2 id="z-b-還是-z-b-作者wush-wu"><a href="#z-b-還是-z-b-作者wush-wu">Z &gt; b 還是 Z &lt; b (作者：Wush Wu)</a></h2>
+<p>最近&quot;Z&quot;和&quot;b&quot;的比較鬧得沸沸揚揚，身為R的重度使用者，當然也要來好好的探討一下這個問題。立馬來試試看：</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="st">&quot;Z&quot;</span> &gt;<span class="st"> &quot;b&quot;</span></code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>沒錯，R語言在這兩者的比較上是支持 <em>Z大於b</em> 的！</p>
+<p>作者我呢也對此抱持著堅定不移的信念，直到某天我在linux上使用crontab跑的R程式出現了Bug。</p>
+<p>這個Bug非常的隱晦，最困難的地方在於，當我開Rstudio or R console來跑的時候，結果是正確的，但是當我把它丟到crontab下跑的時候，結果卻完全不同。</p>
+<p>經過層層追尋之後，我發現問題就在 <em>Z大於b</em> 上啊。在crontab裡， <em>Z小於b</em> ！</p>
+<p>這是怎麼回事？原來這和locale有關。根據<code>?Comparison</code>的描述：</p>
+<pre><code>The collating sequence of locales such as en_US is normally different from C (which should use ASCII) and can be surprising.</code></pre>
+<p>也就是說，當locale（語系）這個環境變數不同的時候，R在做字母的比較是不同的。當語系設定為如&quot;en_US&quot;或&quot;zh_TW&quot;的時候，大小順序應是: <code>A &gt; B &gt; ... &gt; Z &gt; a &gt; b &gt; ... &gt; z</code>，但是當語系設為&quot;C&quot;的時候，R 會把字元轉成對應<a href="http://en.wikipedia.org/wiki/ASCII">的ASCII</a>的整數做比較而此時Z是<code>0x5a</code>，b是<code>0x62</code>，所以Z &gt; b就錯了。</p>
+<p>眼就為憑，我們馬上做點實驗：</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setlocale</span>(<span class="dt">locale =</span> <span class="st">&quot;zh_TW&quot;</span>)</code></pre>
+<pre><code>## [1] &quot;zh_TW/zh_TW/zh_TW/C/zh_TW/zh_TW.UTF-8&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="st">&quot;Z&quot;</span> &gt;<span class="st"> &quot;b&quot;</span></code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setlocale</span>(<span class="dt">locale =</span> <span class="st">&quot;C&quot;</span>)</code></pre>
+<pre><code>## [1] &quot;C/C/C/C/C/zh_TW.UTF-8&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="st">&quot;Z&quot;</span> &gt;<span class="st"> &quot;b&quot;</span></code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>而一般我們裝R之後，預設會使用如en_US或zh_TW等語系，但是crontab這類環境卻是使用C這個語系。</p>
+<p>也因此，我們可以得出結論：</p>
+<blockquote>
+<p>Z大於b不一定是對的，一切都要看你身處的環境啊！</p>
+</blockquote>
+<h3 id="作者-wush-wu-wush978gmail.com"><a href="#作者-wush-wu-wush978gmail.com">作者 : Wush Wu (<script type="text/javascript">
+<!--
+h='&#x67;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d;';a='&#64;';n='&#x77;&#x75;&#x73;&#104;&#x39;&#x37;&#56;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+e+'<\/'+'a'+'>');
+// -->
+</script><noscript>&#x77;&#x75;&#x73;&#104;&#x39;&#x37;&#56;&#32;&#x61;&#116;&#32;&#x67;&#x6d;&#x61;&#x69;&#108;&#32;&#100;&#x6f;&#116;&#32;&#x63;&#x6f;&#x6d;</noscript>)</a></h3>
+<ul>
+<li><a href="https://www.facebook.com/Tw.R.User">Taiwan R User Group</a> Organizer</li>
+<li>R 相關著作：
+<ul>
+<li><a href="http://cran.r-project.org/web/packages/RMessenger/index.html">RMessenger</a>的作者</li>
+<li><a href="https://bitbucket.org/wush_iis/rsus">RSUS</a>，這是<a href="http://www.cs.sfu.ca/~jpei/publications/MISQ_ICDE12.pdf">On Shortest Unique Substring Query</a>的實作</li>
+</ul></li>
+<li>研究領域：Large Scale Learning，<a href="http://www.cs.sfu.ca/~jpei/publications/MISQ_ICDE12.pdf">Text Mining</a>和<a href="http://www.cs.sfu.ca/~jpei/publications/Shortest%20Unique%20Substring%20Queries%20ICDE13.pdf">Uncertain Time Series</a></li>
+</ul>
+</div>
+<div id="footer">
+<a href="https://www.facebook.com/groups/programmerMagazine/">程式人雜誌</a> ，採用 <a href="http://creativecommons.org/licenses/by-sa/3.0/tw/ ">創作共用：姓名標示、相同方式分享</a> 授權，歡迎加入 <a href="https://www.facebook.com/groups/programmerMagazine/">雜誌社團</a>
+</div>
+</body>
+</html>
