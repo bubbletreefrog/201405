@@ -23,7 +23,7 @@
     * [亂數產生器 (作者：Bridan)](article3.html)
     * [Visual Basic 6.0：奇數魔術方陣(Odd Magic Square) 詳細解法 (作者：廖憲得 0xde)](article4.html)
     * [開放電腦計畫 (11) – 中間碼轉組合語言編譯器：使用 node.js + javascript 實作 (作者：陳鍾誠)](article5.html)
-    * [Z > b 還是 Z < b (作者：Wush Wu)](article5.html)
+    * [Z > b 還是 Z < b (作者：Wush Wu)](article6.html)
 * [雜誌訊息](info.html)
 
 ### 雜誌取得
